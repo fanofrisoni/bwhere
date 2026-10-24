@@ -4,7 +4,7 @@ import * as Device from 'expo-device';
 import { initializeApp } from 'firebase/app';
 // @ts-expect-error exported only by the react-native build Metro resolves; firebase's top-level `types` hides it from tsc.
 import { connectAuthEmulator, getReactNativePersistence, initializeAuth } from 'firebase/auth';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
 
 // The machine running Metro (e.g. "192.168.1.10" from "192.168.1.10:8081"); the emulators run there too.
 const metroHost = Constants.expoConfig?.hostUri?.split(':')[0];
@@ -32,7 +32,9 @@ const app = initializeApp({
 
 // Persist the session across app restarts (default in-memory persistence logs users out).
 export const auth = initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
-export const db = getFirestore(app);
+// React Native can't hold Firestore's default streaming (WebChannel) connection open, which shows up as
+// "Could not reach Cloud Firestore backend" / "client is offline". Long polling works everywhere.
+export const db = initializeFirestore(app, { experimentalForceLongPolling: true });
 
 if (emulatorHost) {
   connectAuthEmulator(auth, `http://${emulatorHost}:9099`, { disableWarnings: true });
