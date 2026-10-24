@@ -29,7 +29,9 @@ export default function SettingsScreen() {
   const reloadFriends = () => listFriendships(user.uid).then(setFriendships);
 
   useEffect(() => {
-    getDoc(userRef).then((s) => s.data()?.notifications && setNotifications(s.data()!.notifications));
+    getDoc(userRef)
+      .then((s) => s.data()?.notifications && setNotifications(s.data()!.notifications))
+      .catch((e: Error) => setMessage(e.message));
     reloadFriends().catch((e: Error) => setMessage(e.message));
   }, []);
 
