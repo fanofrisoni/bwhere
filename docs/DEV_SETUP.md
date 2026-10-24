@@ -48,17 +48,19 @@ Leave all the `EXPO_PUBLIC_FIREBASE_*` keys empty and set only the emulator host
 
 | Running the app on | `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` |
 |---|---|
-| Physical phone (Expo Go) | Your computer's LAN IP, e.g. `192.168.1.10` |
+| Physical phone (Expo Go) | `auto` (recommended), or your computer's LAN IP, e.g. `192.168.1.10` |
 | Android emulator | `10.0.2.2` |
-| iOS simulator | `localhost` |
+| iOS simulator | `auto` or `localhost` |
 | Web browser | `localhost` |
+
+`auto` makes the app use the same host it loaded the JavaScript bundle from (the machine running Metro, which is also where the emulators run), so it keeps working when your LAN IP changes. On a physical phone, `localhost` is treated the same way, since it would otherwise point at the phone itself. `auto` does not work with `npx expo start --tunnel`; use your LAN IP then (the phone still needs to reach your computer on ports 8080 and 9099).
 
 To find your LAN IP: `hostname -I` (Linux), `ipconfig getifaddr en0` (macOS), `ipconfig` (Windows).
 
 Example `.env.local`:
 
 ```env
-EXPO_PUBLIC_FIREBASE_EMULATOR_HOST=192.168.1.10
+EXPO_PUBLIC_FIREBASE_EMULATOR_HOST=auto
 ```
 
 When this variable is set, the app uses the project id `demo-b` and connects to Auth on port `9099` and Firestore on port `8080` (see `src/lib/firebase.ts`).
@@ -152,7 +154,7 @@ Typical session (Option A): terminal 1 runs the emulators, terminal 2 runs `npm 
 | Symptom | Fix |
 |---|---|
 | Changes to `.env.local` have no effect | Restart with `npx expo start -c` |
-| `auth/network-request-failed` or Firestore hangs offline | Check the emulators are running and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3). On a phone, check the firewall and that both devices share a network. |
+| "No connection. Try again." / "Can't reach the Firebase emulator", `auth/network-request-failed`, or Firestore hangs offline | Check the emulators are running (step 4) and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3), then restart with `npx expo start -c`. On a phone, check the firewall allows ports 8080 and 9099, that both devices share a network, and that Expo Go has **Local Network** access (iOS Settings → Privacy & Security → Local Network). |
 | `permission-denied` errors | Rules are working as designed: make sure you're signed in. With a real project, check the rules were deployed. |
 | `The query requires an index` | Open the link in the error to create the index (Option B, step 3.6) |
 | Emulators fail to start | Install Java 11+, and make sure ports 8080, 9099 and 4000 are free |
