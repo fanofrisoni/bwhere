@@ -15,6 +15,7 @@ import { useCurrentRegion } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { auth, db } from '@/lib/firebase';
 import { listFriendships, type Friendship } from '@/lib/friends';
+import { formatEventTime } from '@/lib/format';
 
 const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000);
 
@@ -122,7 +123,7 @@ export default function CreateEventScreen() {
               />
             ) : (
               <Pressable onPress={pickAndroid} accessibilityRole="button">
-                <ThemedText type="small">{startsAt.toLocaleString()}</ThemedText>
+                <ThemedText type="small">{formatEventTime(startsAt)}</ThemedText>
               </Pressable>
             )}
           </View>

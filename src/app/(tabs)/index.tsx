@@ -10,6 +10,7 @@ import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchEventsInRegion, type BEvent } from '@/lib/events';
 import { auth } from '@/lib/firebase';
+import { formatEventTime } from '@/lib/format';
 
 const SNAP_POINTS = ['50%', '90%'];
 
@@ -103,7 +104,7 @@ export default function HomeScreen() {
               style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
               <ThemedText type="smallBold">{item.title}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {item.startsAt.toDate().toLocaleString()}
+                {formatEventTime(item.startsAt.toDate())}
                 {item.visibility === 'private' ? ' · Private' : ''}
               </ThemedText>
             </Pressable>
