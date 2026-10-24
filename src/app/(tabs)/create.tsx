@@ -100,7 +100,7 @@ export default function CreateEventScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView gradient style={styles.container}>
       <SafeAreaView edges={['top']} style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
           <ThemedText type="subtitle">New event</ThemedText>
