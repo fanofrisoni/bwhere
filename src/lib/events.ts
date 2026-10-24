@@ -22,6 +22,7 @@ export type BEvent = {
   description: string;
   creatorId: string;
   location: GeoPoint;
+  address?: string; // reverse-geocoded on create; missing on older events
   geohash: string; // geohashForLocation([lat, lng]) — written alongside location on create
   startsAt: Timestamp;
   visibility: 'public' | 'private';

@@ -1,15 +1,27 @@
+<<<<<<< HEAD
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import { Image } from 'expo-image';
 import * as WebBrowser from 'expo-web-browser';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+=======
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+import { Image } from 'expo-image';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { useState } from 'react';
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
 import { ThemedView } from '@/components/themed-view';
+<<<<<<< HEAD
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
@@ -26,6 +38,11 @@ import { auth } from '@/lib/firebase';
 
 // Closes the Google popup and hands its result back to the app on web.
 WebBrowser.maybeCompleteAuthSession();
+=======
+import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { auth, db, emulatorHost } from '@/lib/firebase';
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
 
 async function register(email: string, password: string, displayName: string) {
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
@@ -57,6 +74,7 @@ const MESSAGES: Record<string, string> = {
   'auth/operation-not-allowed': 'This sign-in method is not enabled in Firebase.',
 };
 
+<<<<<<< HEAD
 const googleIcon = <Image source={require('@/assets/images/google-g.svg')} style={{ width: 18, height: 18 }} />;
 
 // Mounted only when configured: the Google hook throws during render without the platform's client ID.
@@ -76,6 +94,14 @@ function GoogleButton({ run, disabled }: { run: (action: () => Promise<unknown>)
       disabled={disabled || !request}
     />
   );
+=======
+// In dev, say which emulator the app tried to reach, since that's almost always why the request failed.
+function errorMessage(e: any) {
+  if (__DEV__ && emulatorHost && e.code === 'auth/network-request-failed') {
+    return `Can't reach the Firebase emulator at ${emulatorHost}:9099. Is it running, and reachable from this device?`;
+  }
+  return MESSAGES[e.code] ?? e.message;
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
 }
 
 export default function LoginScreen() {
@@ -89,6 +115,8 @@ export default function LoginScreen() {
   const scheme = useColorScheme();
   const theme = useTheme();
   const isRegister = mode === 'register';
+  // The logo's navy strokes vanish on black, so dark mode sets it on a light tile.
+  const dark = useColorScheme() === 'dark';
 
   // Sign in with Apple is native-only (iOS 13+); other platforms just don't show the button.
   useEffect(() => {
@@ -102,7 +130,11 @@ export default function LoginScreen() {
     try {
       await action();
     } catch (e: any) {
+<<<<<<< HEAD
       if (!isSignInCancel(e)) setError(MESSAGES[e.code] ?? e.message);
+=======
+      setError(errorMessage(e));
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
       setBusy(false);
     }
   };
@@ -117,11 +149,17 @@ export default function LoginScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView gradient style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.form}>
           <View style={styles.brand}>
+<<<<<<< HEAD
             <ThemedText themeColor="primary" style={styles.logo}>b</ThemedText>
+=======
+            <View style={dark && styles.logoTile}>
+              <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" accessibilityLabel="b" />
+            </View>
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
             <ThemedText themeColor="textSecondary">"b" where you wanna be.</ThemedText>
           </View>
 
@@ -205,11 +243,17 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: MaxContentWidth, paddingHorizontal: Spacing.four },
   form: { flex: 1, justifyContent: 'center', gap: Spacing.three },
+<<<<<<< HEAD
   brand: { alignItems: 'center', marginBottom: Spacing.four },
   logo: { fontSize: 128, lineHeight: 136, fontWeight: 800 },
   divider: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   line: { flex: 1, height: StyleSheet.hairlineWidth },
   apple: { height: 48 },
+=======
+  brand: { alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.four },
+  logo: { width: 72, height: 96 },
+  logoTile: { backgroundColor: '#F0F0F3', padding: Spacing.three, borderRadius: Spacing.four },
+>>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
   error: { color: '#D93025' },
   switch: { textAlign: 'center', padding: Spacing.two },
   dev: { gap: Spacing.two, marginTop: Spacing.four },

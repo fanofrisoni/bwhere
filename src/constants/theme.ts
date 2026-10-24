@@ -108,6 +108,20 @@ export const Colors = {
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
+// Kept deliberately faint: each pair is only a few shades apart so the UI still reads as flat black/white.
+export const Gradients = {
+  light: {
+    screen: ['#F3F4F7', '#ffffff'],
+    card: ['#F5F5F8', '#ECEDF1'],
+    primary: ['#2B2C30', '#000000'],
+  },
+  dark: {
+    screen: ['#16171A', '#000000'],
+    card: ['#27282C', '#1C1D20'],
+    primary: ['#ffffff', '#DCDDE2'],
+  },
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
