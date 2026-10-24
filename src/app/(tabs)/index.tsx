@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
+import { EventAddress } from '@/components/event-address';
 import { ThemedText } from '@/components/themed-text';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
@@ -107,6 +108,7 @@ export default function HomeScreen() {
                 {formatEventTime(item.startsAt.toDate())}
                 {item.visibility === 'private' ? ' · Private' : ''}
               </ThemedText>
+              <EventAddress event={item} />
             </Pressable>
           )}
         />
