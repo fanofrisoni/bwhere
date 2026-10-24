@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
+import { Image } from 'expo-image';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
@@ -89,7 +90,7 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.form}>
           <View style={styles.brand}>
-            <ThemedText type="title">b</ThemedText>
+            <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" accessibilityLabel="b" />
             <ThemedText themeColor="textSecondary">"b" where you wanna be.</ThemedText>
           </View>
 
@@ -142,7 +143,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: MaxContentWidth, paddingHorizontal: Spacing.four },
   form: { flex: 1, justifyContent: 'center', gap: Spacing.three },
-  brand: { alignItems: 'center', marginBottom: Spacing.four },
+  brand: { alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.four },
+  logo: { width: 72, height: 96 },
   error: { color: '#D93025' },
   switch: { textAlign: 'center', padding: Spacing.two },
   dev: { gap: Spacing.two, marginTop: Spacing.four },
