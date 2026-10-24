@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && me() == uid;
+    }
+
+    // Doc id: `${smallerUid}_${largerUid}` so a pair can only have one friendship doc.
+    match /friendships/{id} {
+      // resource == null lets the client check whether a pair's doc exists before requesting.
+      allow read: if signedIn() && (resource == null || me() in resource.data.users);
+      allow create: if signedIn()
+        && request.resource.data.users.size() == 2
+        && me() in request.resource.data.users
+        && id == request.resource.data.users[0] + '_' + request.resource.data.users[1]
+        && request.resource.data.requestedBy == me()
+        && request.resource.data.status == 'pending';
+      // Only the recipient can accept, and accepting may change nothing else.
+      allow update: if signedIn() && me() in resource.data.users
+        && me() != resource.data.requestedBy
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'accepted';
+      allow delete: if signedIn() && me() in resource.data.users;
+    }
+
+    // The client never filters private events itself: these rules are what keep them hidden.
+    match /events/{id} {
+      allow read: if signedIn() && (
+        resource.data.visibility == 'public'
+        || me() in resource.data.invited_users
+        || resource.data.creatorId == me());
+      allow create: if signedIn()
+        && request.resource.data.creatorId == me()
+        && request.resource.data.visibility in ['public', 'private']
+        && (request.resource.data.visibility == 'public' || me() in request.resource.data.invited_users);
+      allow update, delete: if signedIn() && resource.data.creatorId == me();
+    }
+  }
+}
