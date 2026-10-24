@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
-import { ThemedView } from '@/components/themed-view';
+import { CardGradient, ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { auth, db } from '@/lib/firebase';
@@ -82,7 +82,7 @@ export default function SettingsScreen() {
   const card = [styles.card, { backgroundColor: theme.backgroundElement }];
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView gradient style={styles.container}>
       <SafeAreaView edges={['top']} style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <ThemedText type="subtitle">Settings</ThemedText>
@@ -93,6 +93,7 @@ export default function SettingsScreen() {
           )}
 
           <View style={card}>
+            <CardGradient />
             <ThemedText type="smallBold">Profile</ThemedText>
             <ThemedText type="small" themeColor="textSecondary">{user.email}</ThemedText>
             <ThemedInput placeholder="Display name" value={name} onChangeText={setName} style={{ backgroundColor: theme.background }} />
@@ -100,6 +101,7 @@ export default function SettingsScreen() {
           </View>
 
           <View style={card}>
+            <CardGradient />
             <ThemedText type="smallBold">Notifications</ThemedText>
             <View style={styles.row}>
               <ThemedText type="small">Event invites</ThemedText>
@@ -112,6 +114,7 @@ export default function SettingsScreen() {
           </View>
 
           <View style={card}>
+            <CardGradient />
             <ThemedText type="smallBold">Friends</ThemedText>
             <ThemedInput
               placeholder="Friend's email"
@@ -152,6 +155,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: MaxContentWidth },
   content: { gap: Spacing.three, padding: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Spacing.three },
+  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Spacing.three, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
 });

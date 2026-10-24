@@ -1,8 +1,9 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, type TextInputProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { useGradients, useTheme } from '@/hooks/use-theme';
 
 export function ThemedInput({ style, ...rest }: TextInputProps) {
   const theme = useTheme();
@@ -25,6 +26,7 @@ type ButtonProps = {
 
 export function Button({ title, onPress, loading, disabled, variant = 'primary' }: ButtonProps) {
   const theme = useTheme();
+  const gradients = useGradients();
   const primary = variant === 'primary';
   const fg = primary ? theme.background : theme.text;
   return (
@@ -38,6 +40,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary' 
         { backgroundColor: primary ? theme.text : theme.backgroundElement },
         (pressed || disabled) && styles.dim,
       ]}>
+      {primary && <LinearGradient colors={gradients.primary} style={StyleSheet.absoluteFill} pointerEvents="none" />}
       {loading ? <ActivityIndicator color={fg} /> : <ThemedText type="smallBold" style={{ color: fg }}>{title}</ThemedText>}
     </Pressable>
   );
@@ -45,6 +48,6 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary' 
 
 const styles = StyleSheet.create({
   input: { fontSize: 16, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, borderRadius: Spacing.three },
-  button: { alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: Spacing.three, paddingHorizontal: Spacing.three },
+  button: { alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: Spacing.three, paddingHorizontal: Spacing.three, overflow: 'hidden' },
   dim: { opacity: 0.6 },
 });

@@ -6,6 +6,7 @@ import MapView, { Marker } from 'react-native-maps';
 
 import { EventAddress } from '@/components/event-address';
 import { ThemedText } from '@/components/themed-text';
+import { CardGradient } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
@@ -103,6 +104,7 @@ export default function HomeScreen() {
               accessibilityRole="button"
               accessibilityLabel={`Show ${item.title} on map`}
               style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+              <CardGradient />
               <ThemedText type="smallBold">{item.title}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {formatEventTime(item.startsAt.toDate())}
@@ -131,5 +133,5 @@ const styles = StyleSheet.create({
   },
   error: { color: '#D93025', paddingHorizontal: Spacing.three },
   list: { gap: Spacing.two, paddingHorizontal: Spacing.three, paddingBottom: BottomTabInset + Spacing.three },
-  card: { padding: Spacing.three, borderRadius: Spacing.three, gap: Spacing.one },
+  card: { padding: Spacing.three, borderRadius: Spacing.three, gap: Spacing.one, overflow: 'hidden' },
 });
