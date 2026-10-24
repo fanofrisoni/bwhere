@@ -13,6 +13,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { auth, db, emulatorHost } from '@/lib/firebase';
 
 async function register(email: string, password: string, displayName: string) {
@@ -63,6 +64,8 @@ export default function LoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isRegister = mode === 'register';
+  // The logo's navy strokes vanish on black, so dark mode sets it on a light tile.
+  const dark = useColorScheme() === 'dark';
 
   // The root layout swaps to the tabs as soon as auth state flips, so success needs no navigation here.
   const run = async (action: () => Promise<unknown>) => {
@@ -90,7 +93,9 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.form}>
           <View style={styles.brand}>
-            <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" accessibilityLabel="b" />
+            <View style={dark && styles.logoTile}>
+              <Image source={require('@/assets/images/logo.png')} style={styles.logo} contentFit="contain" accessibilityLabel="b" />
+            </View>
             <ThemedText themeColor="textSecondary">"b" where you wanna be.</ThemedText>
           </View>
 
@@ -145,6 +150,7 @@ const styles = StyleSheet.create({
   form: { flex: 1, justifyContent: 'center', gap: Spacing.three },
   brand: { alignItems: 'center', gap: Spacing.two, marginBottom: Spacing.four },
   logo: { width: 72, height: 96 },
+  logoTile: { backgroundColor: '#F0F0F3', padding: Spacing.three, borderRadius: Spacing.four },
   error: { color: '#D93025' },
   switch: { textAlign: 'center', padding: Spacing.two },
   dev: { gap: Spacing.two, marginTop: Spacing.four },
