@@ -4,12 +4,14 @@ import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
+import { EventAddress } from '@/components/event-address';
 import { ThemedText } from '@/components/themed-text';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchEventsInRegion, type BEvent } from '@/lib/events';
 import { auth } from '@/lib/firebase';
+import { formatEventTime } from '@/lib/format';
 
 const SNAP_POINTS = ['50%', '90%'];
 
@@ -103,9 +105,10 @@ export default function HomeScreen() {
               style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
               <ThemedText type="smallBold">{item.title}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
-                {item.startsAt.toDate().toLocaleString()}
+                {formatEventTime(item.startsAt.toDate())}
                 {item.visibility === 'private' ? ' · Private' : ''}
               </ThemedText>
+              <EventAddress event={item} />
             </Pressable>
           )}
         />

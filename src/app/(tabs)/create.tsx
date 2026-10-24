@@ -14,7 +14,9 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useCurrentRegion } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { auth, db } from '@/lib/firebase';
+import { formatEventTime } from '@/lib/format';
 import { listFriendships, type Friendship } from '@/lib/friends';
+import { lookupAddress } from '@/lib/maps';
 
 const inOneHour = () => new Date(Date.now() + 60 * 60 * 1000);
 
@@ -70,12 +72,14 @@ export default function CreateEventScreen() {
     setSaving(true);
     setError(null);
     try {
+      const address = await lookupAddress(location.latitude, location.longitude);
       await addDoc(collection(db, 'events'), {
         title: title.trim(),
         description: description.trim(),
         creatorId: uid,
         location: new GeoPoint(location.latitude, location.longitude),
         geohash: geohashForLocation([location.latitude, location.longitude]),
+        ...(address && { address }),
         startsAt: Timestamp.fromDate(startsAt),
         visibility: isPrivate ? 'private' : 'public',
         invited_users: isPrivate ? [uid, ...invited] : [],
@@ -122,7 +126,7 @@ export default function CreateEventScreen() {
               />
             ) : (
               <Pressable onPress={pickAndroid} accessibilityRole="button">
-                <ThemedText type="small">{startsAt.toLocaleString()}</ThemedText>
+                <ThemedText type="small">{formatEventTime(startsAt)}</ThemedText>
               </Pressable>
             )}
           </View>
