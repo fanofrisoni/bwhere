@@ -12,7 +12,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, emulatorHost } from '@/lib/firebase';
 
 async function register(email: string, password: string, displayName: string) {
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
@@ -46,6 +46,14 @@ const MESSAGES: Record<string, string> = {
   'auth/network-request-failed': 'No connection. Try again.',
 };
 
+// In dev, say which emulator the app tried to reach, since that's almost always why the request failed.
+function errorMessage(e: any) {
+  if (__DEV__ && emulatorHost && e.code === 'auth/network-request-failed') {
+    return `Can't reach the Firebase emulator at ${emulatorHost}:9099. Is it running, and reachable from this device?`;
+  }
+  return MESSAGES[e.code] ?? e.message;
+}
+
 export default function LoginScreen() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
@@ -62,7 +70,7 @@ export default function LoginScreen() {
     try {
       await action();
     } catch (e: any) {
-      setError(MESSAGES[e.code] ?? e.message);
+      setError(errorMessage(e));
       setBusy(false);
     }
   };
