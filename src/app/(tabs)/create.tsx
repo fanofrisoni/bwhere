@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useCurrentRegion } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { auth, db } from '@/lib/firebase';
@@ -200,8 +200,8 @@ const styles = StyleSheet.create({
   form: { gap: Spacing.three, padding: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.three },
-  mapBox: { height: 220, borderRadius: Spacing.three, overflow: 'hidden' },
+  mapBox: { height: 220, borderRadius: Radius.md, overflow: 'hidden' },
   friends: { gap: Spacing.two },
-  friend: { flexDirection: 'row', justifyContent: 'space-between', padding: Spacing.three, borderRadius: Spacing.three },
+  friend: { flexDirection: 'row', justifyContent: 'space-between', padding: Spacing.three, borderRadius: Radius.md },
   error: { color: '#D93025' },
 });

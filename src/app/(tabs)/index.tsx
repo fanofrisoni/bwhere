@@ -4,12 +4,14 @@ import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
+import { EventDeck } from '@/components/event-deck';
 import { ThemedText } from '@/components/themed-text';
-import { BottomTabInset, Spacing } from '@/constants/theme';
-import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
+import { BottomTabInset, Radius, Spacing } from '@/constants/theme';
+import { locateUser, useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchEventsInRegion, type BEvent } from '@/lib/events';
 import { auth } from '@/lib/firebase';
+import { listResponses, setResponse, type EventResponse } from '@/lib/responses';
 
 const SNAP_POINTS = ['50%', '90%'];
 
@@ -20,6 +22,11 @@ export default function HomeScreen() {
   const [events, setEvents] = useState<BEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [responses, setResponses] = useState<Map<string, EventResponse>>(new Map());
+  // Frozen when opened so cards don't reshuffle as answers come in.
+  const [deck, setDeck] = useState<BEvent[] | null>(null);
+  const [locating, setLocating] = useState(false);
+  const uid = auth.currentUser?.uid ?? null;
 
   // Refetch when the visible zone settles or the tab regains focus (e.g. after creating an event);
   // `cancelled` drops responses from stale regions.
@@ -27,10 +34,11 @@ export default function HomeScreen() {
     if (!region) return;
     let cancelled = false;
     setLoading(true);
-    fetchEventsInRegion(region, auth.currentUser?.uid ?? null)
-      .then((list) => {
+    Promise.all([fetchEventsInRegion(region, uid), uid ? listResponses(uid) : new Map<string, EventResponse>()])
+      .then(([list, answered]) => {
         if (cancelled) return;
         setEvents(list);
+        setResponses(answered);
         setError(null);
       })
       .catch((e: Error) => !cancelled && setError(e.message))
@@ -42,6 +50,25 @@ export default function HomeScreen() {
 
   const focus = (e: BEvent) =>
     mapRef.current?.animateToRegion({ latitude: e.location.latitude, longitude: e.location.longitude, ...ZOOM });
+
+  // Moving the map triggers onRegionChangeComplete, which refetches events for the new zone.
+  const centerOnMe = async () => {
+    setLocating(true);
+    mapRef.current?.animateToRegion(await locateUser());
+    setLocating(false);
+  };
+
+  // The tapped event first, then everything here the user hasn't answered yet.
+  const openDeck = (e: BEvent) => {
+    focus(e);
+    setDeck([e, ...events.filter((o) => o.id !== e.id && !responses.has(o.id))]);
+  };
+
+  const respond = (e: BEvent, response: EventResponse) => {
+    if (!uid) return;
+    setResponses((r) => new Map(r).set(e.id, response));
+    setResponse(uid, e.id, response).catch((err: Error) => setError(err.message));
+  };
 
   if (!region) {
     return (
@@ -66,9 +93,25 @@ export default function HomeScreen() {
             title={e.title}
             description={e.visibility === 'private' ? 'Private event' : undefined}
             pinColor={e.visibility === 'private' ? 'purple' : 'red'}
+            onCalloutPress={() => openDeck(e)}
           />
         ))}
       </MapView>
+
+      <Pressable
+        onPress={centerOnMe}
+        disabled={locating}
+        accessibilityRole="button"
+        accessibilityLabel="Center map on my location"
+        style={({ pressed }) => [styles.locate, { backgroundColor: theme.background }, pressed && styles.pressed]}>
+        {locating ? (
+          <ActivityIndicator size="small" color={theme.primary} />
+        ) : (
+          <View style={[styles.locateRing, { borderColor: theme.primary }]}>
+            <View style={[styles.locateDot, { backgroundColor: theme.primary }]} />
+          </View>
+        )}
+      </Pressable>
 
       <BottomSheet
         snapPoints={SNAP_POINTS}
@@ -97,19 +140,24 @@ export default function HomeScreen() {
           }
           renderItem={({ item }: { item: BEvent }) => (
             <Pressable
-              onPress={() => focus(item)}
+              onPress={() => openDeck(item)}
               accessibilityRole="button"
-              accessibilityLabel={`Show ${item.title} on map`}
+              accessibilityLabel={`Open ${item.title}`}
               style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
               <ThemedText type="smallBold">{item.title}</ThemedText>
               <ThemedText type="small" themeColor="textSecondary">
                 {item.startsAt.toDate().toLocaleString()}
                 {item.visibility === 'private' ? ' · Private' : ''}
               </ThemedText>
+              {responses.get(item.id) === 'interested' && (
+                <ThemedText type="smallBold" themeColor="accent">♥ Interested</ThemedText>
+              )}
             </Pressable>
           )}
         />
       </BottomSheet>
+
+      {deck && uid && <EventDeck events={deck} uid={uid} onRespond={respond} onClose={() => setDeck(null)} />}
     </View>
   );
 }
@@ -119,6 +167,26 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   // Map owns the top half; the sheet's first snap point (50%) owns the bottom half.
   map: { height: '50%' },
+  // Bottom-right of the map, just above where the sheet starts at its first snap point.
+  locate: {
+    position: 'absolute',
+    top: '50%',
+    right: Spacing.three,
+    marginTop: -(48 + Spacing.five),
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  locateRing: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  locateDot: { width: 8, height: 8, borderRadius: 4 },
+  pressed: { opacity: 0.6 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -128,5 +196,5 @@ const styles = StyleSheet.create({
   },
   error: { color: '#D93025', paddingHorizontal: Spacing.three },
   list: { gap: Spacing.two, paddingHorizontal: Spacing.three, paddingBottom: BottomTabInset + Spacing.three },
-  card: { padding: Spacing.three, borderRadius: Spacing.three, gap: Spacing.one },
+  card: { padding: Spacing.three, borderRadius: Radius.md, gap: Spacing.one },
 });

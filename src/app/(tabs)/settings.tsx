@@ -7,8 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { seedSampleEvents } from '@/lib/dev-seed';
 import { auth, db } from '@/lib/firebase';
 import { acceptFriendRequest, listFriendships, sendFriendRequest, type Friendship } from '@/lib/friends';
 
@@ -142,6 +143,21 @@ export default function SettingsScreen() {
           </View>
 
           <Button variant="secondary" title="Log out" onPress={() => run('logout', () => signOut(auth))} loading={busy === 'logout'} />
+
+          {__DEV__ && (
+            <View style={card}>
+              <ThemedText type="smallBold">Developer</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                Creates 10 events within 2 km of you over the next few weeks. 3 are private and only visible to you.
+              </ThemedText>
+              <Button
+                variant="secondary"
+                title="Add 10 sample events nearby"
+                loading={busy === 'seed'}
+                onPress={() => run('seed', () => seedSampleEvents(user.uid), 'Added 10 sample events. Open the Home tab to see them.')}
+              />
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -152,6 +168,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: MaxContentWidth },
   content: { gap: Spacing.three, padding: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Spacing.three },
+  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Radius.md },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
 });

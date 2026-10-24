@@ -7,6 +7,11 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn();
       allow write: if signedIn() && me() == uid;
+
+      // Swipe answers from the event deck are private to their owner.
+      match /responses/{eventId} {
+        allow read, write: if signedIn() && me() == uid;
+      }
     }
 
     // Doc id: `${smallerUid}_${largerUid}` so a pair can only have one friendship doc.

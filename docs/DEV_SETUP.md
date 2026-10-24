@@ -81,14 +81,14 @@ When this variable is set, the app uses the project id `demo-b` and connects to 
 
    These are public client keys. Data is protected by `firestore.rules`, so deploy those rules (next step).
 
-5. Deploy the security rules:
+5. Deploy the security rules and indexes:
 
    ```bash
    npx firebase-tools login
-   npx firebase-tools deploy --only firestore:rules --project <your-project-id>
+   npx firebase-tools deploy --only firestore:rules,firestore:indexes --project <your-project-id>
    ```
 
-6. **Composite index:** the map query for nearby public events filters on `visibility` and orders by `geohash`, which needs a composite index on a real project. The first time it runs, Firestore logs an error with a link that creates the index. Open it, wait for the index to finish building, then reload the app. (The emulators don't need indexes.)
+   Do this **before** using the app. Until the rules are deployed, Firestore rejects every write: sign-up appears to work, but profiles and events are never saved. The index (in `firestore.indexes.json`) is what the map's nearby-events query needs; it takes a few minutes to build after the first deploy.
 
 ## 4. Start the Firebase emulators (Option A only)
 
@@ -135,6 +135,29 @@ If your phone can't reach Metro (different network, strict Wi‑Fi), use a tunne
 3. Allow the **location** permission when asked. The map tab centers on your position.
 4. Create an event from the **Create** tab and check it shows on the map.
 
+## Optional: Apple and Google sign-in
+
+Email/password and the dev users work without any of this. The social buttons need extra setup, and neither works inside Expo Go on a phone: they need a [development build](https://docs.expo.dev/develop/development-builds/introduction/) with your own app identifiers. First add `"bundleIdentifier"` under `expo.ios` and `"package"` under `expo.android` in `app.json` (for example `com.yourname.bwhere`), then build with `npx expo run:ios` / `npx expo run:android`.
+
+**Google** (Android, iOS, web)
+
+1. Firebase console → Authentication → Sign-in method → enable **Google**.
+2. Google Cloud console (same project) → APIs & Services → Credentials. You need one OAuth client ID per platform:
+   - **Web**: Firebase already created one ("Web client (auto created by Google Service)"). For web testing, add `http://localhost:8081` to its authorized JavaScript origins.
+   - **iOS**: create an iOS client with your bundle identifier.
+   - **Android**: create an Android client with your package name and your debug keystore's SHA-1 (`cd android && ./gradlew signingReport` after the first `expo run:android`).
+3. Put them in `.env.local` (see `.env.example`): `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`.
+
+Until the current platform's client ID is set, the Google button shows a "not set up yet" message instead of crashing.
+
+**Apple** (iOS only)
+
+1. You need a paid Apple Developer account. The `expo-apple-authentication` plugin in `app.json` adds the Sign in with Apple capability to the build.
+2. Firebase console → Authentication → Sign-in method → enable **Apple**, and register your iOS app (bundle identifier) under Project settings.
+3. Build with `npx expo run:ios` on a device or simulator signed in to an Apple ID.
+
+The Apple button only appears on iOS devices that support it. Android and web don't show it.
+
 ## Day-to-day development
 
 - **Fast Refresh** is on: saving a file under `src/` updates the running app instantly.
@@ -153,8 +176,8 @@ Typical session (Option A): terminal 1 runs the emulators, terminal 2 runs `npm 
 |---|---|
 | Changes to `.env.local` have no effect | Restart with `npx expo start -c` |
 | `auth/network-request-failed` or Firestore hangs offline | Check the emulators are running and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3). On a phone, check the firewall and that both devices share a network. |
-| `permission-denied` errors | Rules are working as designed: make sure you're signed in. With a real project, check the rules were deployed. |
-| `The query requires an index` | Open the link in the error to create the index (Option B, step 3.6) |
+| `permission-denied` errors, or nothing gets saved | With a real project, deploy the rules (Option B, step 5). Otherwise make sure you're signed in. |
+| `The query requires an index` | Run the deploy in Option B, step 5, and wait a few minutes for the index to build |
 | Emulators fail to start | Install Java 11+, and make sure ports 8080, 9099 and 4000 are free |
 | Expo Go says the project is incompatible | Update Expo Go to the version that supports SDK 58 |
 | Map is blank on Android | The Expo Go client includes a Maps key. A custom development build needs its own Google Maps API key. |

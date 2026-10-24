@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, type TextInputProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export function ThemedInput({ style, ...rest }: TextInputProps) {
@@ -21,12 +22,13 @@ type ButtonProps = {
   loading?: boolean;
   disabled?: boolean;
   variant?: 'primary' | 'secondary';
+  icon?: ReactNode;
 };
 
-export function Button({ title, onPress, loading, disabled, variant = 'primary' }: ButtonProps) {
+export function Button({ title, onPress, loading, disabled, variant = 'primary', icon }: ButtonProps) {
   const theme = useTheme();
   const primary = variant === 'primary';
-  const fg = primary ? theme.background : theme.text;
+  const fg = primary ? theme.onPrimary : theme.text;
   return (
     <Pressable
       onPress={onPress}
@@ -35,16 +37,23 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary' 
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: primary ? theme.text : theme.backgroundElement },
+        { backgroundColor: primary ? theme.primary : theme.backgroundElement },
         (pressed || disabled) && styles.dim,
       ]}>
-      {loading ? <ActivityIndicator color={fg} /> : <ThemedText type="smallBold" style={{ color: fg }}>{title}</ThemedText>}
+      {loading ? (
+        <ActivityIndicator color={fg} />
+      ) : (
+        <>
+          {icon}
+          <ThemedText type="smallBold" style={{ color: fg }}>{title}</ThemedText>
+        </>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  input: { fontSize: 16, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, borderRadius: Spacing.three },
-  button: { alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: Spacing.three, paddingHorizontal: Spacing.three },
+  input: { fontSize: 16, paddingHorizontal: Spacing.three, paddingVertical: Spacing.three, borderRadius: Radius.md },
+  button: { flexDirection: 'row', gap: Spacing.two, alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: Radius.md, paddingHorizontal: Spacing.three },
   dim: { opacity: 0.6 },
 });

@@ -26,6 +26,9 @@ export type BEvent = {
   startsAt: Timestamp;
   visibility: 'public' | 'private';
   invited_users: string[]; // private: invitees + creator; public: []
+  imageUrl?: string;
+  price?: number; // missing or 0 = free
+  currency?: string; // ISO 4217, e.g. 'EUR'
   createdAt: Timestamp;
 };
 
