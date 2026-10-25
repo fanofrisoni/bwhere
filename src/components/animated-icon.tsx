@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   splashImage: {
-    width: 86,
-    height: 114,
+    width: 90,
+    height: 108,
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
