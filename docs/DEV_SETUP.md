@@ -177,15 +177,9 @@ Typical session (Option A): terminal 1 runs the emulators, terminal 2 runs `npm 
 | Symptom | Fix |
 |---|---|
 | Changes to `.env.local` have no effect | Restart with `npx expo start -c` |
-<<<<<<< HEAD
-| `auth/network-request-failed` or Firestore hangs offline | Check the emulators are running and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3). On a phone, check the firewall and that both devices share a network. |
+| "No connection. Try again." / "Can't reach the Firebase emulator", `auth/network-request-failed`, or Firestore hangs offline | Check the emulators are running (step 4) and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3), then restart with `npx expo start -c`. On a phone, check the firewall allows ports 8080 and 9099, that both devices share a network, and that Expo Go has **Local Network** access (iOS Settings → Privacy & Security → Local Network). |
 | `permission-denied` errors, or nothing gets saved | With a real project, deploy the rules (Option B, step 5). Otherwise make sure you're signed in. |
 | `The query requires an index` | Run the deploy in Option B, step 5, and wait a few minutes for the index to build |
-=======
-| "No connection. Try again." / "Can't reach the Firebase emulator", `auth/network-request-failed`, or Firestore hangs offline | Check the emulators are running (step 4) and `EXPO_PUBLIC_FIREBASE_EMULATOR_HOST` matches your device type (table in step 3), then restart with `npx expo start -c`. On a phone, check the firewall allows ports 8080 and 9099, that both devices share a network, and that Expo Go has **Local Network** access (iOS Settings → Privacy & Security → Local Network). |
-| `permission-denied` errors | Rules are working as designed: make sure you're signed in. With a real project, check the rules were deployed. |
-| `The query requires an index` | Open the link in the error to create the index (Option B, step 3.6) |
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
 | Emulators fail to start | Install Java 11+, and make sure ports 8080, 9099 and 4000 are free |
 | Expo Go says the project is incompatible | Update Expo Go to the version that supports SDK 58 |
 | Map is blank on Android | The Expo Go client includes a Maps key. A custom development build needs its own Google Maps API key. |

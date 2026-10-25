@@ -4,26 +4,17 @@ import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-<<<<<<< HEAD
+import { EventAddress } from '@/components/event-address';
 import { EventDeck } from '@/components/event-deck';
 import { ThemedText } from '@/components/themed-text';
+import { CardGradient } from '@/components/themed-view';
 import { BottomTabInset, Radius, Spacing } from '@/constants/theme';
 import { locateUser, useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
 import { useTheme } from '@/hooks/use-theme';
 import { fetchEventsInRegion, type BEvent } from '@/lib/events';
 import { auth } from '@/lib/firebase';
-import { listResponses, setResponse, type EventResponse } from '@/lib/responses';
-=======
-import { EventAddress } from '@/components/event-address';
-import { ThemedText } from '@/components/themed-text';
-import { CardGradient } from '@/components/themed-view';
-import { BottomTabInset, Spacing } from '@/constants/theme';
-import { useCurrentRegion, ZOOM } from '@/hooks/use-current-region';
-import { useTheme } from '@/hooks/use-theme';
-import { fetchEventsInRegion, type BEvent } from '@/lib/events';
-import { auth } from '@/lib/firebase';
 import { formatEventTime } from '@/lib/format';
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
+import { listResponses, setResponse, type EventResponse } from '@/lib/responses';
 
 const SNAP_POINTS = ['50%', '90%'];
 
@@ -162,13 +153,10 @@ export default function HomeScreen() {
                 {formatEventTime(item.startsAt.toDate())}
                 {item.visibility === 'private' ? ' · Private' : ''}
               </ThemedText>
-<<<<<<< HEAD
+              <EventAddress event={item} />
               {responses.get(item.id) === 'interested' && (
                 <ThemedText type="smallBold" themeColor="accent">♥ Interested</ThemedText>
               )}
-=======
-              <EventAddress event={item} />
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
             </Pressable>
           )}
         />
@@ -213,9 +201,5 @@ const styles = StyleSheet.create({
   },
   error: { color: '#D93025', paddingHorizontal: Spacing.three },
   list: { gap: Spacing.two, paddingHorizontal: Spacing.three, paddingBottom: BottomTabInset + Spacing.three },
-<<<<<<< HEAD
-  card: { padding: Spacing.three, borderRadius: Radius.md, gap: Spacing.one },
-=======
-  card: { padding: Spacing.three, borderRadius: Spacing.three, gap: Spacing.one, overflow: 'hidden' },
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
+  card: { padding: Spacing.three, borderRadius: Radius.md, gap: Spacing.one, overflow: 'hidden' },
 });

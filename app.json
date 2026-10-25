@@ -8,14 +8,10 @@
     "scheme": "b",
     "userInterfaceStyle": "automatic",
     "ios": {
-<<<<<<< HEAD
-      "icon": "./assets/expo.icon",
-      "usesAppleSignIn": true
-=======
+      "usesAppleSignIn": true,
       "infoPlist": {
         "LSApplicationQueriesSchemes": ["comgooglemaps", "waze"]
       }
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
     },
     "android": {
       "adaptiveIcon": {

@@ -6,13 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Button, ThemedInput } from '@/components/themed-input';
-<<<<<<< HEAD
-import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
-=======
 import { CardGradient, ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
+import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { seedSampleEvents } from '@/lib/dev-seed';
 import { auth, db } from '@/lib/firebase';
@@ -178,10 +173,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row', justifyContent: 'center' },
   safeArea: { flex: 1, maxWidth: MaxContentWidth },
   content: { gap: Spacing.three, padding: Spacing.three, paddingBottom: BottomTabInset + Spacing.four },
-<<<<<<< HEAD
-  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Radius.md },
-=======
-  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Spacing.three, overflow: 'hidden' },
->>>>>>> 938030ce76af7488d5631a2b159fce0342938d0b
+  card: { gap: Spacing.two, padding: Spacing.three, borderRadius: Radius.md, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two },
 });
