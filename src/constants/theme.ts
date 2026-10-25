@@ -113,12 +113,12 @@ export const Gradients = {
   light: {
     screen: ['#F3F4F7', '#ffffff'],
     card: ['#F5F5F8', '#ECEDF1'],
-    primary: ['#2B2C30', '#000000'],
+    primary: [Palette.violet[600], Palette.violet[700]],
   },
   dark: {
     screen: ['#16171A', '#000000'],
     card: ['#27282C', '#1C1D20'],
-    primary: ['#ffffff', '#DCDDE2'],
+    primary: [Palette.violet[500], Palette.violet[600]],
   },
 } as const;
 
